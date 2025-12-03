@@ -1,18 +1,18 @@
-#include "vehicle/vehicle.h"
+#pragma once
 
-class SkidPad
+#include "vehicle/vehicle.h"
+#include "config/config.h"
+#include "simulation/simulation.h"
+
+class SkidPad : public Simulation
 {
     float diameter;
     float radius;
     float trackLength;
     SkidPadConfig trackConfig;
-    SimulationConstants simulationConstants;
-    SimConfig simConfig;
-    Vehicle& vehicle;
-    OptimizationConfig optimizationConfig;
 
 public:
-    SkidPad(Vehicle &vehicle, SimConfig simConfig, SkidPadConfig skidPadConfig, OptimizationConfig optimizationConfig, SimulationConstants simulationConstants);
-    void run();
-    float calculatePoints(float time, float tMax, float pMax);
+    SkidPad(Vehicle &vehicle, SimConfig simConfig, SimulationConstants simulationConstants, SkidPadConfig skidPadConfig);
+    float run() override;
+    float calculatePoints(float time, const PointsConfig &pointsConfig) const;
 };

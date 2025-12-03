@@ -9,8 +9,9 @@
 Vehicle::Vehicle(VehicleConfig config) : config(config)
 {
     CarWheelBase<bool> isWheelDriven;
-    for (size_t i = 0; i < tires.WHEEL_COUNT; i++) isWheelDriven[i] = true;
-    
+    for (size_t i = 0; i < tires.WHEEL_COUNT; i++)
+        isWheelDriven[i] = true;
+
     switch (config.driveType)
     {
     case RWD:
@@ -48,11 +49,11 @@ Vehicle::Vehicle(VehicleConfig config) : config(config)
     */
 }
 
-float Vehicle::getTireForces(float velocity, float acceleration, const SimConfig& simConfig, bool isLateral)
+float Vehicle::getTireForces(float velocity, float acceleration, const SimConfig &simConfig, bool isLateral)
 {
     auto loads = totalTireLoads(velocity, acceleration, simConfig, isLateral);
     float ret = 0;
-    
+
     for (size_t i = 0; i < tires.WHEEL_COUNT; i++)
     {
         ret += tires[i].calculateForce(loads[i], isLateral);
@@ -61,7 +62,7 @@ float Vehicle::getTireForces(float velocity, float acceleration, const SimConfig
     return ret;
 }
 
-CarWheelBase<float> Vehicle::totalTireLoads(float velocity, float acceleration, const SimConfig& simConfig, bool isLateral)
+CarWheelBase<float> Vehicle::totalTireLoads(float velocity, float acceleration, const SimConfig &simConfig, bool isLateral)
 {
     auto static_load = staticLoad(simConfig.earthAcc);
     auto aero = aeroLoad(velocity, simConfig.airDensity);
@@ -111,11 +112,13 @@ CarWheelBase<float> Vehicle::loadTransfer(float acceleration, bool isLateral)
     }
     float transfer = moment / config.wheelbase;
     float left = config.leftWeightDist;
-    
+
     loads.fl = -transfer * left;
     loads.fr = -transfer * (1 - left);
     loads.rl = transfer * left;
     loads.rr = transfer * (1 - left);
-    
+
     return loads;
 }
+
+float Vehicle::getMass() { return config.mass; }

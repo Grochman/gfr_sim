@@ -2,19 +2,25 @@
 
 #include <cwchar>
 
-enum DriveType {
-    AWD, RWD, FWD
+enum DriveType
+{
+    AWD,
+    RWD,
+    FWD
 };
 
 template <typename T, int C>
-struct WheelBase {
+struct WheelBase
+{
     constexpr static auto WHEEL_COUNT = C;
-    
-    T& operator[](size_t i) {
+
+    T &operator[](size_t i)
+    {
         return _data[i];
     }
 
-    const T& operator[](size_t i) const {
+    const T &operator[](size_t i) const
+    {
         return _data[i];
     }
 
@@ -22,21 +28,26 @@ struct WheelBase {
 };
 
 template <typename T>
-struct WheelBase<T, 4> {
+struct WheelBase<T, 4>
+{
     constexpr static auto WHEEL_COUNT = 4;
-    
-    T& operator[](size_t i) {
+
+    T &operator[](size_t i)
+    {
         return _data[i];
     }
 
-    const T& operator[](size_t i) const {
+    const T &operator[](size_t i) const
+    {
         return _data[i];
     }
 
-    union{
+    union
+    {
         T _data[4];
 
-        struct{
+        struct
+        {
             T fl;
             T fr;
             T rl;
@@ -46,4 +57,6 @@ struct WheelBase<T, 4> {
 };
 
 template <typename T>
-struct CarWheelBase: public WheelBase<T, 4> {};
+struct CarWheelBase : public WheelBase<T, 4>
+{
+};

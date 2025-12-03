@@ -4,13 +4,14 @@
 #include <cstdio>
 #include <numbers>
 
-SkidPad::SkidPad(Vehicle& vehicle, SimConfig simConfig, SkidPadConfig skidPadConfig, OptimizationConfig optimizationConfig, SimulationConstants simulationConstants) : vehicle(vehicle), simulationConstants(simulationConstants), simConfig(simConfig), optimizationConfig(optimizationConfig) {
+SkidPad::SkidPad(Vehicle &vehicle, SimConfig simConfig, SimulationConstants simulationConstants, SkidPadConfig skidPadConfig) : trackConfig(skidPadConfig), Simulation(vehicle, simConfig, simulationConstants)
+{
     diameter = trackConfig.minDiameter + trackConfig.diameterOffset;
     radius = diameter / 2;
     trackLength = 2 * std::numbers::pi_v<float> * radius;
 }
 
-void SkidPad::run()
+float SkidPad::run()
 {
     float lapTime = 0;
     float acceleration = std::pow(simConfig.startSpeed, 2) / radius;
@@ -20,7 +21,7 @@ void SkidPad::run()
     for (int i = 0; i < maxIterations; i++)
     {
         float forces = vehicle.getTireForces(simConfig.startSpeed, acceleration, simConfig, true);
-        float newAcc = forces / vehicle.config.mass;
+        float newAcc = forces / vehicle.getMass();
         float newVelocity = std::sqrt(newAcc * radius);
         float newLapTime = trackLength / newVelocity;
 
@@ -33,14 +34,10 @@ void SkidPad::run()
         acceleration = newAcc;
     }
 
-    float points = calculatePoints(lapTime, trackConfig.historicalBestTime * 1.25, trackConfig.historicalPMax);
-    printf("lap time: %f\npoints: %f\n", lapTime, points);
+    return lapTime;
 }
 
-float SkidPad::calculatePoints(float time, float tMax, float pMax)
+float SkidPad::calculatePoints(float time, const PointsConfig &pointsConfig) const
 {
-    float a = optimizationConfig.pointsCoefficients[0];
-    float b = optimizationConfig.pointsCoefficients[1];
-    float c = optimizationConfig.pointsCoefficients[2];
-    return a * pMax * (std::pow(tMax / time, 2) - 1) / b + c * pMax;
+    return Simulation::calculatePoints(time, pointsConfig.historicalBestTime * 1.25, pointsConfig.historicalPMax, pointsConfig.pointsCoefficients);
 }

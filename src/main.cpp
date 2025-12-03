@@ -5,14 +5,18 @@
 #include <cstdio>
 #include <iostream>
 
-int main(){
+int main()
+{
     VehicleConfig vc;
     SimConfig sc;
     SkidPadConfig skidPadConfig;
     SimulationConstants simulationConstants;
-    OptimizationConfig optconf;
-    
+    PointsConfig pointsConfig;
+
     Vehicle v(vc);
-    SkidPad s(v, sc, skidPadConfig, optconf, simulationConstants);
-    s.run();
+    SkidPad s(v, sc, simulationConstants, skidPadConfig);
+    float lapTime = s.run();
+
+    float points = s.calculatePoints(lapTime, pointsConfig);
+    printf("lap time: %f\npoints: %f\n", lapTime, points);
 }
