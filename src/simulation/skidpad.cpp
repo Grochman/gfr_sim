@@ -24,7 +24,7 @@ float SkidPad::run()
         float newVelocity = std::sqrt(newAcc * radius);
         float newLapTime = trackLength / newVelocity;
 
-        if (i >= minIterations and abs(newLapTime - lapTime) <= simConfig.errDelta)
+        if (i >= minIterations && abs(newLapTime - lapTime) <= simConfig.errDelta)
         {
             break;
         }
