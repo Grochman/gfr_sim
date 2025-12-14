@@ -1,62 +1,40 @@
 #pragma once
 
 #include <cwchar>
+#include <memory>
 
-enum DriveType
+struct CarAcronyms
 {
-    AWD,
-    RWD,
-    FWD
-};
+    static constexpr unsigned int WHEEL_COUNT = 4;
 
-template <typename T, int C>
-struct WheelBase
-{
-    constexpr static auto WHEEL_COUNT = C;
-
-    T &operator[](size_t i)
+    enum DriveType : size_t
     {
-        return _data[i];
-    }
+        AWD,
+        RWD,
+        FWD
+    };
 
-    const T &operator[](size_t i) const
+    enum wheelNames : size_t
     {
-        return _data[i];
-    }
-
-    T _data[C];
-};
-
-template <typename T>
-struct WheelBase<T, 4>
-{
-    constexpr static auto WHEEL_COUNT = 4;
-
-    T &operator[](size_t i)
-    {
-        return _data[i];
-    }
-
-    const T &operator[](size_t i) const
-    {
-        return _data[i];
-    }
-
-    union
-    {
-        T _data[4];
-
-        struct
-        {
-            T fl;
-            T fr;
-            T rl;
-            T rr;
-        };
+        FL,
+        FR,
+        RL,
+        RR
     };
 };
 
 template <typename T>
-struct CarWheelBase : public WheelBase<T, 4>
+struct CarWheelBase
 {
+    T &operator[](size_t i)
+    {
+        return _data[i];
+    }
+
+    const T &operator[](size_t i) const
+    {
+        return _data[i];
+    }
+    
+    std::array<T, CarAcronyms::WHEEL_COUNT> _data;
 };

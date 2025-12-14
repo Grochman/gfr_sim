@@ -7,7 +7,7 @@ class Vehicle
 {
     VehicleConfig config;
 
-    CarWheelBase<Tire> tires;
+    CarWheelBase<std::unique_ptr<Tire>> tires;
     CarWheelBase<float> distributeForces(float totalForce, float frontDist, float leftDist);
     CarWheelBase<float> totalTireLoads(float velocity, float acceleration, const SimConfig &simConfig, bool isLateral);
     CarWheelBase<float> staticLoad(float earthAcc);

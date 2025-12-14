@@ -60,7 +60,7 @@ struct VehicleConfig
     int idleRpm = 3000;
     int maxTorqueRpm = 5500;
     float tireScalingFactor = 0.77;
-    DriveType driveType = RWD;
+    CarAcronyms::DriveType driveType = CarAcronyms::RWD;
 };
 
 struct PointsConfig
