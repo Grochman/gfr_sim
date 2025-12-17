@@ -11,6 +11,7 @@ Based on: https://github.com/BAAdas/lap-doer
 
 ## Building
 
+### Linux / WSL
 ```bash
 git clone https://github.com/Grochman/gfr_sim.git
 cd gfr_sim
@@ -19,3 +20,11 @@ cmake ..
 cmake --build .
 ./gfr_sim
 ```
+
+### Windows
+```bash
+git clone https://github.com/Grochman/gfr_sim.git
+```
+- Open VisualStudio
+- Click File -> Open -> CMake and select the top level CMakeList.txt
+- If you do not have install "Linux, Max, and embedded development with C++" (most likely you will be propted by the IDE to do so, if not go to VisualStudio Installer and download the package manually)
