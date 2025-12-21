@@ -62,6 +62,7 @@ CarWheelBase<float> Vehicle::totalTireLoads(float velocity, float acceleration,
 }
 
 CarWheelBase<float> Vehicle::staticLoad(float earthAcc) {
+    // assume the mass center is constant
     return distributeForces(config.mass * earthAcc, config.frontWeightDist, config.leftWeightDist);
 }
 
@@ -75,11 +76,15 @@ CarWheelBase<float> Vehicle::distributeForces(float totalForce, float frontDist,
 }
 
 CarWheelBase<float> Vehicle::aeroLoad(float velocity, float airDensity) {
+    // assume air dencity is constant
+    // assume cla is const -> it should not be / cla for skidpad
     float totalForce = 0.5 * config.cla * airDensity * std::pow(velocity, 2);
     return distributeForces(totalForce, config.frontAeroDist, config.leftAeroDist);
 }
 
 CarWheelBase<float> Vehicle::loadTransfer(float acceleration, bool isLateral) {
+    // we would like to have chassis stiffness antirollbar
+    // acceleration as 2d vector and no isLateral
     CarWheelBase<float> loads;
     float moment = acceleration * config.mass * config.cogHeight;
     if (isLateral) {
