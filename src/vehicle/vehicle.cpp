@@ -33,13 +33,12 @@ Vehicle::Vehicle(VehicleConfig config) : config(config) {
     }
 }
 
-float Vehicle::getTireForces(float velocity, float acceleration, const SimConfig &simConfig,
-                             bool isLateral) {
-    auto loads = totalTireLoads(velocity, acceleration, simConfig, isLateral);
+float Vehicle::getTireForces(float velocity, vec2<float> acceleration, const SimConfig &simConfig) {
+    auto loads = totalTireLoads(velocity, acceleration, simConfig);
     float ret = 0;
 
     for (size_t i = 0; i < CarAcronyms::WHEEL_COUNT; i++) {
-        if (isLateral) {
+        if (acceleration.y > acceleration.x) { // for now
             ret += tires[i]->getLateralForce(loads[i]);
         } else {
             ret += tires[i]->getLongitudinalForce(loads[i]);
@@ -49,11 +48,11 @@ float Vehicle::getTireForces(float velocity, float acceleration, const SimConfig
     return ret;
 }
 
-CarWheelBase<float> Vehicle::totalTireLoads(float velocity, float acceleration,
-                                            const SimConfig &simConfig, bool isLateral) {
+CarWheelBase<float> Vehicle::totalTireLoads(float velocity, vec2<float> acceleration,
+                                            const SimConfig &simConfig) {
     auto static_load = staticLoad(simConfig.earthAcc);
     auto aero = aeroLoad(velocity, simConfig.airDensity);
-    auto transfer = loadTransfer(acceleration, isLateral);
+    auto transfer = loadTransfer(acceleration);
     CarWheelBase<float> ret;
     for (size_t i = 0; i < CarAcronyms::WHEEL_COUNT; i++) {
         ret[i] = std::max(0.f, static_load[i] + aero[i] + transfer[i]);
@@ -82,27 +81,29 @@ CarWheelBase<float> Vehicle::aeroLoad(float velocity, float airDensity) {
     return distributeForces(totalForce, config.frontAeroDist, config.leftAeroDist);
 }
 
-CarWheelBase<float> Vehicle::loadTransfer(float acceleration, bool isLateral) {
+CarWheelBase<float> Vehicle::loadTransfer(vec2<float> acceleration) {
     // we would like to have chassis stiffness antirollbar
-    // acceleration as 2d vector and no isLateral
     CarWheelBase<float> loads;
-    float moment = acceleration * config.mass * config.cogHeight;
-    if (isLateral) {
-        float front = moment * config.frontWeightDist / config.frontTrackWidth;
-        float rear = moment * (1 - config.frontWeightDist) / config.rearTrackWidth;
-        loads[CarAcronyms::FL] = -front;
-        loads[CarAcronyms::FR] = front;
-        loads[CarAcronyms::RL] = -rear;
-        loads[CarAcronyms::RR] = rear;
-        return loads;
-    }
-    float transfer = moment / config.wheelbase;
+    
+    float momentX = acceleration.x * config.mass * config.centerOfGravityHeight;
+    float transferX = momentX / config.wheelbase;
+    
     float left = config.leftWeightDist;
 
-    loads[CarAcronyms::FL] = -transfer * left;
-    loads[CarAcronyms::FR] = -transfer * (1 - left);
-    loads[CarAcronyms::RL] = transfer * left;
-    loads[CarAcronyms::RR] = transfer * (1 - left);
+    loads[CarAcronyms::FL] = -transferX * left;
+    loads[CarAcronyms::FR] = -transferX * (1 - left);
+    loads[CarAcronyms::RL] = transferX * left;
+    loads[CarAcronyms::RR] = transferX * (1 - left);
+    
+    float momentY = acceleration.y * config.mass * config.centerOfGravityHeight;
+    
+    float front = momentY * config.frontWeightDist / config.frontTrackWidth;
+    float rear = momentY * (1 - config.frontWeightDist) / config.rearTrackWidth;
+
+    loads[CarAcronyms::FL] += -front;
+    loads[CarAcronyms::FR] += front;
+    loads[CarAcronyms::RL] += -rear;
+    loads[CarAcronyms::RR] += rear;
 
     return loads;
 }

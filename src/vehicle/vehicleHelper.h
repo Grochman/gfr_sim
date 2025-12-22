@@ -3,6 +3,12 @@
 #include <cwchar>
 #include <memory>
 
+template <typename T>
+struct vec2 {
+    T x;
+    T y;
+};
+
 struct CarAcronyms {
     static constexpr unsigned int WHEEL_COUNT = 4;
 

@@ -18,7 +18,7 @@ struct VehicleConfig {
     float mass = 280.0;
     float frontTrackWidth = 1.256;
     float rearTrackWidth = 1.216;
-    float cogHeight = 0.33;
+    float centerOfGravityHeight = 0.33;
     float frontWeightDist = 0.45;
     float leftWeightDist = 0.5;
     float cla = 4.3;
