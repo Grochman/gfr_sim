@@ -11,13 +11,14 @@ Acceleration::Acceleration(Vehicle& vehicle, SimConfig simConfig,
 }
 
 float Acceleration::run() {
-    float pos = 0, vel = dragConfig.startSpeed, time = 0, prevAcc = 0.0, acc = 0;
+    float time = 0, pos = 0, vel = dragConfig.startSpeed;
+    vec2<float> acc = {0, 0}, prevAcc = {0, 0};
 
     while (pos < dragConfig.length) {
         float currentTime = time + simConfig.dragDt;
 
         if (isShifting) {
-            acc = 0.0;
+            acc = {0, 0};
             if (currentTime >= shiftEndTime) {
                 isShifting = false;
             }
@@ -36,24 +37,24 @@ float Acceleration::run() {
             float powerThrust = vehicle.getPowerThrust(vel, currentGear);
 
             // Initial guess for acc (previous for stability)
-            float accGuess = prevAcc;
+            vec2<float> accGuess = prevAcc;
             for (int i = 0; i < simConfig.maxIterConv; i++) {
                 // Compute traction using current guess for load transfer
-                float tractionMax = vehicle.getTireForces(vel, accGuess, simConfig, false);
+                float tractionMax = vehicle.getTireForces(vel, accGuess, simConfig);
 
                 float thrust = std::min(powerThrust, tractionMax);
-                float accNew = (thrust - dragForce - rrForce) / vehicle.getMass();
+                vec2<float> accNew = {(thrust - dragForce - rrForce) / vehicle.getMass(), 0};
 
                 // Check convergence
-                if (std::abs(accNew - accGuess) < simConfig.errDelta) {
+                if (std::abs(accNew.x - accGuess.x) < simConfig.errDelta) {
                     break;
                 }
-                accGuess = accNew;  // Relax to new value (or use acc_guess = 0.5 * acc_guess + 0.5
-                                    // * acc_new for damping)
+                accGuess = accNew;  // Relax to new value
+                //(or use acc_guess = 0.5 * acc_guess + 0.5 * acc_new for damping)
             }
             acc = accGuess;  // Use converged value
         }
-        vel += acc * simConfig.dragDt;
+        vel += acc.x * simConfig.dragDt;
         pos += vel * simConfig.dragDt;
         time = currentTime;
         prevAcc = acc;  // Still update prev_acc for next step's initial guess

@@ -13,14 +13,14 @@ SkidPad::SkidPad(Vehicle& vehicle, SimConfig simConfig, SimulationConstants simu
 
 float SkidPad::run() {
     float lapTime = 0;
-    float acceleration = std::pow(simConfig.startSpeed, 2) / radius;
+    vec2<float> acceleration = {0, static_cast<float>(std::pow(simConfig.startSpeed, 2) / radius)};
     float maxIterations = simulationConstants.trackMaxIterations;
     float minIterations = simulationConstants.trackMinIterations;
 
     for (int i = 0; i < maxIterations; i++) {
-        float forces = vehicle.getTireForces(simConfig.startSpeed, acceleration, simConfig, true);
-        float newAcc = forces / vehicle.getMass();
-        float newVelocity = std::sqrt(newAcc * radius);
+        float forces = vehicle.getTireForces(simConfig.startSpeed, acceleration, simConfig);
+        vec2<float> newAcc = {0, forces / vehicle.getMass()};
+        float newVelocity = std::sqrt(newAcc.y * radius);
         float newLapTime = trackLength / newVelocity;
 
         if (i >= minIterations && abs(newLapTime - lapTime) <= simConfig.errDelta) {
