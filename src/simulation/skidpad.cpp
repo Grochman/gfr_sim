@@ -19,7 +19,7 @@ float SkidPad::run() {
 
     for (int i = 0; i < maxIterations; i++) {
         float forces = vehicle.getTireForces(simConfig.startSpeed, acceleration, simConfig);
-        vec2<float> newAcc = {0, forces / vehicle.getMass()};
+        vec2<float> newAcc = {0, forces / vehicle.getTotalMass()};
         float newVelocity = std::sqrt(newAcc.y * radius);
         float newLapTime = trackLength / newVelocity;
 

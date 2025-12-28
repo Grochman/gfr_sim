@@ -15,15 +15,20 @@ struct SimConfig {
 };
 
 struct VehicleConfig {
-    float mass = 280.0;
+    float nonSuspendedMass = 0.0;
+    float suspendedMass = 280.0;
+    float nonSuspendedCenterOfGravityHeight = 0.0;
+    float suspendedCenterOfGravityHeight = 0.33;
+    float rollCenterHeight = 0.33;
+    float antiRollStiffnessFront = 15000.0;
+    float antiRollStiffnessRear = 15000.0;
     float frontTrackWidth = 1.256;
     float rearTrackWidth = 1.216;
-    float centerOfGravityHeight = 0.33;
-    float frontWeightDist = 0.45;
-    float leftWeightDist = 0.5;
+    float frontWeightDist = 0.45;  // range 0-1
+    float leftWeightDist = 0.5;    // range 0-1
     float cla = 4.3;
-    float leftAeroDist = 0.5;
-    float frontAeroDist = 0.5;
+    float leftAeroDist = 0.5;   // range 0-1
+    float frontAeroDist = 0.5;  // range 0-1
     float quadFac = -0.0002;
     float linFac = 1.8109;
     float cda = 1.3;
