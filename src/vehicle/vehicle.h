@@ -16,6 +16,7 @@ class Vehicle {
     CarWheelBase<float> loadTransfer(vec2<float> acceleration);
     float getEngineTorque(float rpm);
     float getWheelTorque(float engine_torque, int gear);
+    const float totalMass;
 
    public:
     Vehicle(VehicleConfig config);
@@ -23,7 +24,7 @@ class Vehicle {
     float speedToRpm(float speed_ms, int gear);
     float getPowerThrust(float speed_ms, int gear);
 
-    float getMass();
+    float getTotalMass();
     float getCRR();
     float getCDA();
     float getMaxTorqueRpm();

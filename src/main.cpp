@@ -18,7 +18,7 @@ int main() {
     SkidPad s(v, sc, simulationConstants, skidPadConfig);
     float lapTime = s.run();
     float points = s.calculatePoints(lapTime, pointsConfig);
-    printf("lap time: %f\npoints: %f\n", lapTime, points);
+    printf("skidpad time: %f\npoints: %f\n", lapTime, points);
 
     AccelerationConfig accelerationConfig;
 
@@ -28,5 +28,5 @@ int main() {
     pointsConfig.historicalBestTime = 4.23;
     pointsConfig.historicalPMax = 73;
     points = a.calculatePoints(lapTime, pointsConfig);
-    printf("lap time: %f\npoints: %f\n", lapTime, points);
+    printf("acc time: %f\npoints: %f\n", lapTime, points);
 }

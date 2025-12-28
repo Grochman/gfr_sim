@@ -10,7 +10,8 @@
 #include "vehicle/tire/tireSimple.h"
 #include "vehicle/vehicleHelper.h"
 
-Vehicle::Vehicle(VehicleConfig config) : config(config) {
+Vehicle::Vehicle(VehicleConfig config)
+    : config(config), totalMass(config.nonSuspendedMass + config.suspendedMass) {
     CarWheelBase<bool> isWheelDriven;
     for (size_t i = 0; i < CarAcronyms::WHEEL_COUNT; i++) {
         isWheelDriven[i] = true;
@@ -35,17 +36,17 @@ Vehicle::Vehicle(VehicleConfig config) : config(config) {
 
 float Vehicle::getTireForces(float velocity, vec2<float> acceleration, const SimConfig &simConfig) {
     auto loads = totalTireLoads(velocity, acceleration, simConfig);
-    float ret = 0;
+    float force = 0;
 
     for (size_t i = 0; i < CarAcronyms::WHEEL_COUNT; i++) {
-        if (acceleration.y > acceleration.x) { // for now
-            ret += tires[i]->getLateralForce(loads[i]);
+        if (acceleration.y > acceleration.x) {  // for now
+            force += tires[i]->getLateralForce(loads[i]);
         } else {
-            ret += tires[i]->getLongitudinalForce(loads[i]);
+            force += tires[i]->getLongitudinalForce(loads[i]);
         }
     }
 
-    return ret;
+    return force;
 }
 
 CarWheelBase<float> Vehicle::totalTireLoads(float velocity, vec2<float> acceleration,
@@ -62,7 +63,7 @@ CarWheelBase<float> Vehicle::totalTireLoads(float velocity, vec2<float> accelera
 
 CarWheelBase<float> Vehicle::staticLoad(float earthAcc) {
     // assume the mass center is constant
-    return distributeForces(config.mass * earthAcc, config.frontWeightDist, config.leftWeightDist);
+    return distributeForces(totalMass * earthAcc, config.frontWeightDist, config.leftWeightDist);
 }
 
 CarWheelBase<float> Vehicle::distributeForces(float totalForce, float frontDist, float leftDist) {
@@ -75,40 +76,55 @@ CarWheelBase<float> Vehicle::distributeForces(float totalForce, float frontDist,
 }
 
 CarWheelBase<float> Vehicle::aeroLoad(float velocity, float airDensity) {
-    // assume air dencity is constant
+    // assume air density is constant
     // assume cla is const -> it should not be / cla for skidpad
     float totalForce = 0.5 * config.cla * airDensity * std::pow(velocity, 2);
     return distributeForces(totalForce, config.frontAeroDist, config.leftAeroDist);
 }
 
+// for now same function for transient and steady state
 CarWheelBase<float> Vehicle::loadTransfer(vec2<float> acceleration) {
-    // we would like to have chassis stiffness antirollbar
     CarWheelBase<float> loads;
-    
-    float momentX = acceleration.x * config.mass * config.centerOfGravityHeight;
+
+    // pseudo transient
+    float momentX = acceleration.x * totalMass * config.suspendedCenterOfGravityHeight;
     float transferX = momentX / config.wheelbase;
-    
+
     float left = config.leftWeightDist;
 
     loads[CarAcronyms::FL] = -transferX * left;
     loads[CarAcronyms::FR] = -transferX * (1 - left);
     loads[CarAcronyms::RL] = transferX * left;
     loads[CarAcronyms::RR] = transferX * (1 - left);
-    
-    float momentY = acceleration.y * config.mass * config.centerOfGravityHeight;
-    
-    float front = momentY * config.frontWeightDist / config.frontTrackWidth;
-    float rear = momentY * (1 - config.frontWeightDist) / config.rearTrackWidth;
 
-    loads[CarAcronyms::FL] += -front;
-    loads[CarAcronyms::FR] += front;
-    loads[CarAcronyms::RL] += -rear;
-    loads[CarAcronyms::RR] += rear;
+    // steady state
+    float nonSuspendedMomentY =
+        config.nonSuspendedMass * acceleration.y * config.nonSuspendedCenterOfGravityHeight;
+
+    float geometricMomentY = config.suspendedMass * acceleration.y * config.rollCenterHeight;
+
+    float elasticMomentY = config.suspendedMass * acceleration.y *
+                           (config.suspendedCenterOfGravityHeight - config.rollCenterHeight);
+
+    float antiRollStiffnessTotal = config.antiRollStiffnessFront + config.antiRollStiffnessRear;
+
+    float frontTransfer =
+        (nonSuspendedMomentY + geometricMomentY +
+         elasticMomentY * config.antiRollStiffnessFront / antiRollStiffnessTotal) *
+        config.frontWeightDist / config.frontTrackWidth;
+    float rearTransfer = (nonSuspendedMomentY + geometricMomentY +
+                          elasticMomentY * config.antiRollStiffnessRear / antiRollStiffnessTotal) *
+                         (1 - config.frontWeightDist) / config.rearTrackWidth;
+
+    loads[CarAcronyms::FL] += -frontTransfer;
+    loads[CarAcronyms::FR] += frontTransfer;
+    loads[CarAcronyms::RL] += -rearTransfer;
+    loads[CarAcronyms::RR] += rearTransfer;
 
     return loads;
 }
 
-float Vehicle::getMass() { return config.mass; }
+float Vehicle::getTotalMass() { return totalMass; }
 float Vehicle::getCRR() { return config.crr; }
 float Vehicle::getCDA() { return config.cda; }
 float Vehicle::getMaxTorqueRpm() { return config.maxTorqueRpm; }

@@ -32,7 +32,7 @@ float Acceleration::run() {
             }
 
             // Converged calculation: Fixed-point iteration for acc
-            float rrForce = vehicle.getMass() * simConfig.earthAcc * vehicle.getCRR();
+            float rrForce = vehicle.getTotalMass() * simConfig.earthAcc * vehicle.getCRR();
             float dragForce = 0.5 * vehicle.getCDA() * simConfig.airDensity * std::pow(vel, 2);
             float powerThrust = vehicle.getPowerThrust(vel, currentGear);
 
@@ -43,7 +43,7 @@ float Acceleration::run() {
                 float tractionMax = vehicle.getTireForces(vel, accGuess, simConfig);
 
                 float thrust = std::min(powerThrust, tractionMax);
-                vec2<float> accNew = {(thrust - dragForce - rrForce) / vehicle.getMass(), 0};
+                vec2<float> accNew = {(thrust - dragForce - rrForce) / vehicle.getTotalMass(), 0};
 
                 // Check convergence
                 if (std::abs(accNew.x - accGuess.x) < simConfig.errDelta) {
