@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <memory>
 #include <optional>
 
@@ -31,6 +32,8 @@ class Vehicle {
     vec2<float> getLatAccAndYawMoment(float tolerance, const EnvironmentConfig& environmentConfig);
     CarWheelBase<float> calculateSlipAngles(float r, vec2<float> velocity);
     CarWheelBase<float> staticLoad(float earthAcc);
+    float ackermann(size_t wheel);
+    float toe(size_t wheel);
     float calculateLatAcc(CarWheelBase<float> tireForcesY);
     CarWheelBase<float> distributeForces(float totalForce, float frontDist, float leftDist);
     CarWheelBase<float> totalTireLoads(float latAcc, const EnvironmentConfig& environmentConfig);

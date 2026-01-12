@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <iostream>
 #include <memory>
 #include <numbers>
@@ -109,12 +110,14 @@ CarWheelBase<float> Vehicle::calculateSlipAngles(float r, vec2<float> velocity) 
 
     CarWheelBase<float> slipAngle;
 
-    slipAngle[CarAcronyms::FL] =
-        (velocity.x + r * a) / velocity.x - r * frontTrackWidth / 2 - state.steeringAngle;
-    slipAngle[CarAcronyms::FR] =
-        (velocity.x + r * a) / velocity.x + r * frontTrackWidth / 2 - state.steeringAngle;
-    slipAngle[CarAcronyms::RL] = (velocity.x - r * b) / velocity.x - r * rearTrackWidth / 2;
-    slipAngle[CarAcronyms::RR] = (velocity.x - r * b) / velocity.x + r * rearTrackWidth / 2;
+    slipAngle[CarAcronyms::FL] = (velocity.x + r * a) / velocity.x - r * frontTrackWidth / 2 -
+                                 ackermann(CarAcronyms::FL) - toe(CarAcronyms::FL);
+    slipAngle[CarAcronyms::FR] = (velocity.x + r * a) / velocity.x + r * frontTrackWidth / 2 -
+                                 ackermann(CarAcronyms::FR) + toe(CarAcronyms::FR);
+    slipAngle[CarAcronyms::RL] =
+        (velocity.x - r * b) / velocity.x - r * rearTrackWidth / 2 - toe(CarAcronyms::RL);
+    slipAngle[CarAcronyms::RR] =
+        (velocity.x - r * b) / velocity.x + r * rearTrackWidth / 2 + toe(CarAcronyms::RR);
 
     return slipAngle;
 }
@@ -151,6 +154,10 @@ CarWheelBase<float> Vehicle::staticLoad(float earthAcc) {
 }
 
 vehicleState Vehicle::springing(CarWheelBase<float> loads) { return state; }
+
+float Vehicle::ackermann(size_t wheel) { return state.steeringAngle; }
+
+float Vehicle::toe(size_t wheel) { return tires[wheel]->getToe(); };
 
 CarWheelBase<float> Vehicle::distributeForces(float totalForce, float frontDist, float leftDist) {
     CarWheelBase<float> forces;
