@@ -1,4 +1,4 @@
-# Global Formula Racing Simulator
+# Laptime Simulator
 
 Vehicle dynamics simulator for Formula Student competition analysis on Skidpad and Acceleration events.
 
@@ -14,7 +14,7 @@ Based on: <https://github.com/BAAdas/lap-doer>
 ### Linux / WSL
 
 ```bash
-git clone https://github.com/Grochman/gfr_sim.git
+git clone https://github.com/PGRacing-Team-Vehicle-Perfomance/laptime_simulator.git
 cd gfr_sim
 mkdir build && cd build
 cmake ..
@@ -25,7 +25,7 @@ cmake --build .
 ### Windows
 
 ```bash
-git clone https://github.com/Grochman/gfr_sim.git
+git clone https://github.com/PGRacing-Team-Vehicle-Perfomance/laptime_simulator.git
 ```
 
 - Open Visual Studio
