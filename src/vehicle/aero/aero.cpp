@@ -3,9 +3,7 @@
 #include "config/config.h"
 #include "vehicle/vehicleHelper.h"
 
-Aero::Aero(const VehicleConfig& config) : cla(config.cla) {
-    position = config.claPosition;
-}
+Aero::Aero(const VehicleConfig& config) : cla(config.cla) {}
 
 void Aero::calculate(VehicleState state, float airDensity, PolarVec3 wind) {
     calculateTorques(state, airDensity, wind);
@@ -32,5 +30,5 @@ void Aero::resistance(VehicleState state, float airDensity, PolarVec3 wind) {}
 void Aero::sideForce(VehicleState state, float airDensity, PolarVec3 wind) {
 }
 void Aero::downforce(VehicleState state, float airDensity, PolarVec3 wind) {
-    force.z = 0.5 * cla * airDensity * std::pow(state.velocity.amplitude, 2);
+    force.value.z = 0.5 * cla * airDensity * std::pow(state.velocity.amplitude, 2);
 }

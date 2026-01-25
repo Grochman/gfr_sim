@@ -4,54 +4,7 @@
 #include <cmath>
 #include <cwchar>
 
-#define _USE_MATH_DEFINES
-#include <math.h>
-
-
-class Angle {
-    float value;
-
-    static float normalize(double v) {
-        v = std::fmod(v, 360.0);
-        return v < 0 ? v + 360.0 : v;
-    }
-
-   public:
-    Angle(float v = 0) : value(normalize(v)) {}
-    float get() const { return value; }
-
-    Angle operator+(float rhs) const { return Angle(value + rhs); }
-    Angle operator-(float rhs) const { return Angle(value - rhs); }
-
-    Angle& operator+=(float rhs) {
-        value = normalize(value + rhs);
-        return *this;
-    }
-    Angle& operator-=(float rhs) {
-        value = normalize(value - rhs);
-        return *this;
-    }
-
-    float getRadians() { return value / 180.0f * M_PI; }
-};
-
-template <typename T>
-struct Vec3 {
-    T x;
-    T y;
-    T z;
-};
-
-struct PolarVec3 {
-    float amplitude;
-    Angle alfa;
-    Angle ro;
-};
-
-struct Body {
-    float mass;
-    Vec3<float> position;
-};
+#include "types.h"
 
 struct CarAcronyms {
     static constexpr unsigned int WHEEL_COUNT = 4;
@@ -69,29 +22,16 @@ struct WheelData {
 };
 
 struct RotationalState {
-    Vec3<float> angular_velocity = {0, 0, 0};
+    Vec3f angular_velocity = {0, 0, 0};
     Vec3<Angle> rotation = {0, 0, 0};
 };
 
 struct LinearState {
     PolarVec3 velocity = {.amplitude = 0, .alfa = 0, .ro = 0};
-    Vec3<float> position = {0, 0, 0}; // chyba nie potrzebne
+    Vec3f position = {0, 0, 0}; // chyba nie potrzebne
 };
 
 struct VehicleState : LinearState, RotationalState {
     float deltaHeave = 0;
     float steeringAngle = 0;
-};
-
-class ReactiveEntity {
-   public:
-    Vec3<float> getForce() { return force; }
-    Vec3<float> getPosition() { return position; }
-    Vec3<float> getSelfMoment() { return selfMoment; }
-
-   protected:
-    Vec3<float> position;  // position relative to parent / object owner - vechile has a aero object
-    Vec3<float> force;     // combined force with orign at entity position
-    Vec3<float>
-        selfMoment;  // moment on the entity - not the moment caused on paretn / object owner
 };

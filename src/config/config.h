@@ -1,7 +1,7 @@
 #pragma once
 
 #include "config/configHelper.cpp"
-#include "vehicle/vehicleHelper.h"
+#include "types.h"
 
 struct EnvironmentConfig {
     float airTemperature = 20;                                                  // [°C]
@@ -15,8 +15,8 @@ struct EnvironmentConfig {
 
 struct VehicleConfig {
     // {0 0} geometric center of front axel
-    Body nonSuspendedMass = {0.0, {0, 0, 0}};
-    Body suspendedMass = {280.0, {0, 0, 0}};
+    Mass nonSuspendedMass = {0.0, {0, 0, 0}};
+    Mass suspendedMass = {280.0, {0, 0, 0}};
 
     float rollCenterHeightFront = 0.33;
     float rollCenterHeightBack = 0.33;
@@ -29,7 +29,7 @@ struct VehicleConfig {
     float trackDistance = 2;
 
     float cla = 4.3;
-    Vec3<float> claPosition = {0.5, 0.5, 0.0};
+    Vec3f claPosition = {0.5, 0.5, 0.0};
 };
 
 struct TireConfig {

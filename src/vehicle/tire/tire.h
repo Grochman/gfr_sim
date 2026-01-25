@@ -3,7 +3,7 @@
 #include "vehicle/vehicleHelper.h"
 #include "config/config.h"
 
-class Tire: public ReactiveEntity {
+class Tire: public ForcefullObject, public TorquedObject {
    protected:
     float scalingFactor;
     float quadFac;

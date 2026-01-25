@@ -3,7 +3,7 @@
 #include "config/config.h"
 #include "vehicle/vehicleHelper.h"
 
-class Aero: public ReactiveEntity {
+class Aero: public ForcefullObject, public MassiveObject {
     float cla;
     void calculateTorques(VehicleState state, float airDensity, PolarVec3 wind);
 

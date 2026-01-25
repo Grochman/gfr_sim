@@ -9,10 +9,10 @@
 #include "vehicle/vehicleHelper.h"
 
 class Vehicle {
-    Body combinedTotalMass;
+    Mass combinedTotalMass;
 
-    Body nonSuspendedMass;
-    Body suspendedMass;
+    Mass nonSuspendedMass;
+    Mass suspendedMass;
 
     float rollCenterHeightFront;
     float rollCenterHeightBack;
@@ -25,7 +25,7 @@ class Vehicle {
     float trackDistance;
     VehicleState state;
 
-    Aero aero;
+    Positioned<Aero> aero;
 
     WheelData<std::unique_ptr<Tire>> tires;
 
