@@ -6,10 +6,11 @@
 #include "vehicle/vehicle.h"
 
 int main() {
+    TireConfig tc;
     VehicleConfig vc;
     EnvironmentConfig config;
-
-    Vehicle v(vc);
-    v.getState()->velocity.amplitude = 100;
+    
+    Vehicle v(vc, tc);
+    v.getState()->velocity.setLength(100);
     v.calculateYawMomentDiagram(1, config);
 }
