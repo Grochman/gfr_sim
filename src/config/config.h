@@ -1,7 +1,7 @@
 #pragma once
 
 #include "config/configHelper.cpp"
-#include "vehicle/vehicleHelper.h"
+#include "types.h"
 
 struct EnvironmentConfig {
     float airTemperature = 20;                                                  // [°C]
@@ -9,14 +9,13 @@ struct EnvironmentConfig {
     float airHumidity = 50;                                                     // [%]
     float airDensity = ::airDensity(airTemperature, airPressure, airHumidity);  // [kg/m³]
     float earthAcc = 9.81;                                                      // [m/s²]
-    polarVec3 wind = {.amplitude = 0,
-                      .angle = {0, 0}};  //  amplitude [m/s] , angle [°] 0 = from North
+    Vec3f wind = {0, 0, 0};  //  amplitude [m/s] , angle [°] 0 = from North
 };
 
 struct VehicleConfig {
     // {0 0} geometric center of front axel
-    Body nonSuspendedMass = {0.0, {0, 0, 0}};
-    Body suspendedMass = {280.0, {0, 0, 0}};
+    Mass nonSuspendedMass = {0.0, {0, 0, 0}};
+    Mass suspendedMass = {280.0, {0, 0, 0}};
 
     float rollCenterHeightFront = 0.33;
     float rollCenterHeightBack = 0.33;
@@ -29,7 +28,13 @@ struct VehicleConfig {
     float trackDistance = 2;
 
     float cla = 4.3;
-    vec2<float> claPosition = {0.5, 0.5};
+    Vec3f claPosition = {0.5, 0.5, 0.0};
+};
+
+struct TireConfig {
+    float scalingFac;
+    float quadFac;
+    float linFac;
 };
 
 struct SkidPadConfig {
